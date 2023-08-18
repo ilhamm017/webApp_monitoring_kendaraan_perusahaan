@@ -1,0 +1,21 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    flex-direction:column
+}
+
+.login {
+    background-color: #222;
+    margin: 100px;
+    border: 5px solid ;
+    padding: 40px;
+    align-self: center;
+}
+
+.login h1 {
+    color: aliceblue;
+}
+
+.login label {
+    color: aliceblue;
+}
