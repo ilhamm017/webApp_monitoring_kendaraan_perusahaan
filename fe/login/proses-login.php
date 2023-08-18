@@ -1,31 +1,45 @@
 <!-- proses login php -->
-<?php 
-if (isset($_POST['login'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $data = array(
-        'email' => $email,
-        'password' => $password
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+
+    // Buat data yang akan dikirimkan ke API login
+    $login_data = array(
+        "email" => $email,
+        "password" => $password
     );
-    $json_data = json_encode($data);
-    $api_url = 'localhost:8000/login';
+
+    // Konversi data menjadi format JSON
+    $json_data = json_encode($login_data);
+
+    // Konfigurasi cURL untuk melakukan request ke API login
+    $api_url = "http://localhost:8000/login";
     $ch = curl_init($api_url);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
     curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: applications/json',
-        'Content-Length: ' . strlen($json_data)
+        "Content-Type: application/json",
+        "Content-Length: " . strlen($json_data)
     ));
 
+    // Eksekusi cURL request
     $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    $response_data = json_decode($response, true);
-    if ($response_data && isset($response_data['message'])) {
-        echo "<p>Pesan dari server: ". $response_data['message']."</p>";
+
+    // Cek response dari API
+    if ($http_code == 200) {
+        // Berhasil login, arahkan ke halaman lain atau tampilkan pesan
+        echo "Login berhasil!";
+    } elseif ($http_code == 400) {
+        // Password salah, tampilkan pesan
+        $response_data = json_decode($response, true);
+        echo $response_data["message"];
     } else {
-        echo "<p>Tidak dapat mengurai response dari server </p>";
+        // Tidak dapat terhubung ke API atau response tidak valid
+        echo "Terjadi masalah saat proses login.";
     }
 }
-
 ?>
